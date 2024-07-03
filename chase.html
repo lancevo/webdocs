@@ -5,39 +5,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       body {
-        font-size:12px;
+        font-size: 12px;
+      }
+      li {
+        margin-bottom: 10px;
       }
     </style>
-    <script>
-  $.ajaxSetup({
-        beforeSend: function(xhr) {
-          const jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeWlieWdicWdvcHVlcXF3ZmxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTgyODk5NjUsImV4cCI6MjAzMzg2NTk2NX0.DhPvUqEKRxH-PjL3d0-Zr1tQ25nyNNZOJQIhdBCIf0A'; // Or get from cookie/variable
-          xhr.setRequestHeader('Authorization', 'Bearer ' + jwtToken);
-        }
-      });
- function getContent() {
-$.ajax({
-    url: "https://xdyibygbqgopueqqwflo.supabase.co/functions/v1/get-data?table=chase&orderby=id&datatype=html", // Replace with your HTML file's path
-    dataType: "text",
-    success: function(data) {
-      var parsedHtml = $.parseHTML(data);
-      $("#content-html").html(parsedHtml); // Replace the body's content
-      // Optionally, update the page title
-    },
-    error: function() {
-      alert("Error loading the new HTML page.");
-    }
-  });
-}
-$(document).ready(function() {
-  getContent();
- $("#updateArticles").click(function (event) {
-        event.preventDefault();
-        getContent();
-      });
-
-});
-    </script>
   </head>
 
   <body>
@@ -51,10 +24,53 @@ $(document).ready(function() {
         refresh articles</button
       ><br />
 
-      <br />
-<div id="content-html"></div>
+      <div id="content-html"></div>
     </div>
 
+    <script>
+      $.ajaxSetup({
+        beforeSend: function (xhr) {
+          const jwtToken =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeWlieWdicWdvcHVlcXF3ZmxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTgyODk5NjUsImV4cCI6MjAzMzg2NTk2NX0.DhPvUqEKRxH-PjL3d0-Zr1tQ25nyNNZOJQIhdBCIf0A"; // Or get from cookie/variable
+          xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+        },
+      });
+      function getContent() {
+    
+        $.get("https://xdyibygbqgopueqqwflo.supabase.co/functions/v1/alerts?table=chase&orderby=id", function (data) {
+            processContent(data);
+        });
+      }
 
+      function processContent(data) {
+        const createHtml = (tx) => {
+          const { security, txtype, quantity, price, date, description } = tx;
+          const url = `https://www.tradingview.com/chart/?symbol=${security}`;
+          const ts = new Date(date).toLocaleDateString();
+
+          return `
+        <li>
+        <div class="link"><a href="${url}"><b>${txtype} ${security} at \$${price} x ${quantity}</b></a></div>             
+        <div class="timestamp"><em class="text-slate-800">${ts}</em></div>
+        <div class="description">${description}</div>
+        </li>
+        `;
+        };
+
+        const html =
+          '<ul id="chase" class="posts">' +
+            data.map(createHtml).join(" ") +
+          "</ul>";
+        $("#content-html").html(html);
+      }
+
+      $(document).ready(function () {
+        getContent();
+        $("#updateArticles").click(function (event) {
+          event.preventDefault();
+          getContent();
+        });
+      });
+    </script>
   </body>
 </html>
