@@ -17,7 +17,7 @@
       });
  function getContent() {
 $.ajax({
-    url: "https://xdyibygbqgopueqqwflo.supabase.co/functions/v1/get-data?name=chase&sortby=id&datatype=html", // Replace with your HTML file's path
+    url: "https://xdyibygbqgopueqqwflo.supabase.co/functions/v1/get-data?table=chase&orderby=id&datatype=html", // Replace with your HTML file's path
     dataType: "text",
     success: function(data) {
       var parsedHtml = $.parseHTML(data);
