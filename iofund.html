@@ -1,0 +1,65 @@
+<html lang="en">
+  <head>
+    <title>IO Fund Posts</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-size:12px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container mx-auto">
+      <h1 class="text-xl">io fund posts</h1>
+      <hr />
+      <button
+        id="updateArticles"
+        class="float-right bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
+        refresh articles</button
+      ><br />
+
+      <br />
+      <div id="articles"></div>
+    </div>
+
+    <script>
+
+      $.ajaxSetup({
+        beforeSend: function(xhr) {
+          const jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkeWlieWdicWdvcHVlcXF3ZmxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTgyODk5NjUsImV4cCI6MjAzMzg2NTk2NX0.DhPvUqEKRxH-PjL3d0-Zr1tQ25nyNNZOJQIhdBCIf0A'; // Or get from cookie/variable
+          xhr.setRequestHeader('Authorization', 'Bearer ' + jwtToken);
+        }
+      });
+      getArticles();
+
+      function getArticles() {
+        $.get("https://xdyibygbqgopueqqwflo.supabase.co/functions/v1/alerts?table=iofund&orderby=created", function (data) {
+          processPosts(data);
+        });
+      }
+
+      $("#updateArticles").click(function (event) {
+        event.preventDefault();
+        getArticles();
+      });
+
+      function processPosts(posts) {
+        const items = posts.map((post) => {
+          const ts = new Date(post.created).toLocaleString();
+          const url =
+            "https://wire.io-fund.com/advanced/categories/market-signals/posts/" +
+            post.id;
+          return `<p><a class="text-blue-700" href="${url}">${post.title} by ${post.author_name}</a> &nbsp;
+              <em class="text-slate-800">${ts}</em><br/>
+            </p>
+            `;
+        });
+
+        $("#articles").html(items);
+      }
+    </script>
+  </body>
+</html>
