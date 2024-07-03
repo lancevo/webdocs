@@ -18,9 +18,10 @@
  function getContent() {
 $.ajax({
     url: "https://xdyibygbqgopueqqwflo.supabase.co/functions/v1/get-data?name=chase&sortby=id&datatype=html", // Replace with your HTML file's path
-    dataType: "html",
+    dataType: "text",
     success: function(data) {
-      $("#content-html").html(data); // Replace the body's content
+      var parsedHtml = $.parseHTML(data);
+      $("#content-html").html(parsedHtml); // Replace the body's content
       // Optionally, update the page title
     },
     error: function() {
