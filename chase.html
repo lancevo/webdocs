@@ -22,7 +22,6 @@ $.ajax({
     success: function(data) {
       $("#content-html").html(data); // Replace the body's content
       // Optionally, update the page title
-      $("head title").text(data.match(/<title>(.*?)<\/title>/)[1]); 
     },
     error: function() {
       alert("Error loading the new HTML page.");
