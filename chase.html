@@ -40,7 +40,7 @@
       });
       function getContent() {
     
-        $.get("https://xdyibygbqgopueqqwflo.supabase.co/functions/v1/alerts?table=chase&orderby=id", function (data) {
+        $.get("https://xdyibygbqgopueqqwflo.supabase.co/functions/v1/alerts?table=chase&orderby=date", function (data) {
             processContent(data);
         });
       }
@@ -54,7 +54,7 @@
           return `
         <li>
         <div class="link"><a href="${url}" target="_blank"><span class="${txtype.toLowerCase().trim() === 'sell'? 'sell' : 'buy'}">${txtype}</span> <b>${security}</b> &nbsp;&nbsp;&nbsp;at \$${price} x ${quantity} = <em>$${price * quantity}</em> </a> &nbsp;
-        <span class="timestamp"><em class="text-slate-800">${ts}</em></span> </div>
+        <span class="timestamp"><em class="text-slate-800">${date}</em></span> </div>
         
         </li>
         `;
