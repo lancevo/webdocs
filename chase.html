@@ -55,7 +55,9 @@
 
           return `
         <li>
-        <div class="link"><a href="${url}" target="_blank">
+        <div class="link">
+        <span class="timestamp">${date}</span> &nbsp;
+        <a href="${url}" target="_blank">
           <span class="${txtype.toLowerCase().trim() === 'sell'? 'sell' : 'buy'}">${txtype}</span> 
           <b>${percent} ${security}</b> 
           &nbsp;&nbsp;&nbsp;at \$${price} x ${quantity} = <em>$${value}</em> </a> &nbsp;
