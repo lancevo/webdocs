@@ -50,10 +50,15 @@
           const { security, txtype, quantity, price, date, description } = tx;
           const url = `https://www.tradingview.com/chart/?symbol=${security}`;
           const ts = new Date(date).toLocaleDateString();
+          const value = price * quantity;
+          const percent = (value / 100000).toFixed(3);
 
           return `
         <li>
-        <div class="link"><a href="${url}" target="_blank"><span class="${txtype.toLowerCase().trim() === 'sell'? 'sell' : 'buy'}">${txtype}</span> <b>${security}</b> &nbsp;&nbsp;&nbsp;at \$${price} x ${quantity} = <em>$${price * quantity}</em> </a> &nbsp;
+        <div class="link"><a href="${url}" target="_blank">
+          <span class="${txtype.toLowerCase().trim() === 'sell'? 'sell' : 'buy'}">${txtype}</span> 
+          <b>${percent} ${security}</b> 
+          &nbsp;&nbsp;&nbsp;at \$${price} x ${quantity} = <em>$${value}</em> </a> &nbsp;
         <span class="timestamp"><em class="text-slate-800">${date}</em></span> </div>
         
         </li>
