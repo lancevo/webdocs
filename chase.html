@@ -40,7 +40,7 @@
       });
       function getContent() {
     
-        $.get("https://xdyibygbqgopueqqwflo.supabase.co/functions/v1/alerts?table=chase&orderby=date", function (data) {
+        $.get("https://xdyibygbqgopueqqwflo.supabase.co/functions/v1/alerts?table=chase&orderby=date&limit=20", function (data) {
             processContent(data);
         });
       }
