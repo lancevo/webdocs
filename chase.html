@@ -51,7 +51,7 @@
           const url = `https://www.tradingview.com/chart/?symbol=${security}`;
           const ts = new Date(date).toLocaleDateString();
           const value = price * quantity;
-          const percent = (value / 100000).toFixed(1);
+          const percent = (value / 100000).toFixed(3);
 
           return `
         <li>
