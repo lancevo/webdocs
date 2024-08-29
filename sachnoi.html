@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Audiobook Player</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      text-align: center;
+      padding: 20px;
+    }
+    .player-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+    }
+    img {
+      width: auto;
+      height: 200px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+    .button-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .button-row button {
+      flex: 1;
+    }
+    .info {
+      margin-top: 10px;
+    }
+    .info h2 {
+      margin: 0;
+    }
+    .info p {
+      margin: 5px 0;
+    }
+    .progress-bar-container {
+      position: relative;
+      width: 100%;
+      margin: 10px 0;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background-color: #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background-color: #007bff;
+      border-radius: 5px;
+      width: 0;
+    }
+    .time-stamp {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+    .chapter-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+    .chapter-list li {
+      padding: 10px;
+      background: #f0f0f0;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .chapter-list li:hover {
+      background-color: #ddd;
+    }
+    .chapter-list li.active {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="player-container">
+    <h1 id="bookTitle">Audiobook Title</h1>
+    <img id="poster" src="" alt="Audiobook Poster" />
+    <div class="info">
+      <p id="currentTrack">Current Track</p>
+    </div>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar" onclick="seekAudio(event)">
+        <div id="progressBarFill" class="progress-bar-fill"></div>
+      </div>
+      <div class="time-stamp">
+        <span id="currentTime">00:00</span>
+        <span id="totalTime">00:00</span>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button id="playButton" onclick="playAudio()">Play</button>
+      <button id="pauseButton" onclick="pauseAudio()" disabled>Pause</button>
+      <button id="nextButton" onclick="nextChapter()" disabled>Next Chapter</button>
+    </div>
+
+    <h2>Chapters</h2>
+    <ul id="chapterList" class="chapter-list"></ul>
+  </div>
+
+  <script>
+    let audiobooks = {};
+    let currentAudiobookId = "song-hanh-phuc-cns";
+    let currentChapterIndex = 0;
+    let sound = null;
+    let progressBar = document.getElementById("progressBarFill");
+    let progressBarContainer = document.querySelector(".progress-bar");
+    let currentTimeLabel = document.getElementById("currentTime");
+    let totalTimeLabel = document.getElementById("totalTime");
+
+    async function fetchAudiobooks() {
+      try {
+        const response = await fetch('https://lancevo.github.io/webdocs/audiobooks.json');
+        audiobooks = await response.json();
+        initPlayer(currentAudiobookId);
+      } catch (error) {
+        console.error("Error fetching audiobook data:", error);
+      }
+    }
+
+    function initPlayer(audiobookId) {
+      currentAudiobookId = audiobookId;
+      currentChapterIndex = localStorage.getItem(audiobookId + "_chapterIndex")
+        ? parseInt(localStorage.getItem(audiobookId + "_chapterIndex"))
+        : 0;
+
+      if (audiobooks[audiobookId]) {
+        document.getElementById("bookTitle").textContent = audiobooks[audiobookId].title;
+        document.getElementById("poster").src = audiobooks[audiobookId].poster;
+        const chaptersList = document.getElementById("chapterList");
+        chaptersList.innerHTML = "";
+        audiobooks[audiobookId].chapters.forEach((chapter, index) => {
+          const listItem = document.createElement("li");
+          listItem.textContent = chapter.title;
+          listItem.onclick = () => {
+            currentChapterIndex = index;
+            loadChapter();
+          };
+          chaptersList.appendChild(listItem);
+        });
+
+        loadChapter();
+      } else {
+        console.error("Audiobook not found:", audiobookId);
+      }
+    }
+
+    function loadChapter() {
+      if (sound) {
+        sound.stop();
+      }
+
+      if (audiobooks[currentAudiobookId] && audiobooks[currentAudiobookId].chapters[currentChapterIndex]) {
+        const chapter = audiobooks[currentAudiobookId].chapters[currentChapterIndex];
+        sound = new Howl({
+          src: [chapter.src],
+          html5: true,
+          onplay: () => {
+            document.getElementById("playButton").disabled = true;
+            document.getElementById("pauseButton").disabled = false;
+            document.getElementById("nextButton").disabled = false;
+            updateProgress();
+          },
+          onend: () => {
+            nextChapter();
+          }
+        });
+
+        sound.play();
+        localStorage.setItem(currentAudiobookId + "_chapterIndex", currentChapterIndex);
+        document.getElementById("currentTrack").textContent = chapter.title;
+        updateProgress();
+      }
+    }
+
+    function playAudio() {
+      if (sound) {
+        sound.play();
+        document.getElementById("playButton").disabled = true;
+        document.getElementById("pauseButton").disabled = false;
+      }
+    }
+
+    function pauseAudio() {
+      if (sound) {
+        sound.pause();
+        document.getElementById("playButton").disabled = false;
+        document.getElementById("pauseButton").disabled = true;
+      }
+    }
+
+    function nextChapter() {
+      if (currentChapterIndex < audiobooks[currentAudiobookId].chapters.length - 1) {
+        currentChapterIndex++;
+        loadChapter();
+      } else {
+        console.log("No more chapters.");
+      }
+    }
+
+    function updateProgress() {
+      if (sound) {
+        const duration = sound.duration();
+        const currentTime = sound.seek();
+        const progress = (currentTime / duration) * 100;
+        progressBar.style.width = `${progress}%`;
+
+        currentTimeLabel.textContent = formatTime(currentTime);
+        totalTimeLabel.textContent = formatTime(duration);
+
+        setTimeout(updateProgress, 500);
+      }
+    }
+
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${minutes < 10 ? '0' : ''}${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    function seekAudio(event) {
+      if (sound) {
+        const progressBarWidth = progressBarContainer.clientWidth;
+        const clickPosition = event.offsetX;
+        const newTime = (clickPosition / progressBarWidth) * sound.duration();
+        sound.seek(newTime);
+      }
+    }
+
+    window.onload = fetchAudiobooks;
+  </script>
+</body>
+</html>
