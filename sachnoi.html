@@ -116,7 +116,55 @@
       <ul id="chapterList" class="chapter-list"></ul>
     </div>
 
+    
     <script>
+      // Save the playback position to localStorage
+      function savePlaybackPosition() {
+        if (sound) {
+          const currentTime = sound.seek();
+          localStorage.setItem(currentAudiobookId + '_chapter', currentChapterIndex);
+          localStorage.setItem(currentAudiobookId + '_time', currentTime);
+        }
+      }
+
+      // Load the saved playback position from localStorage
+      function loadPlaybackPosition() {
+        const savedChapterIndex = localStorage.getItem(currentAudiobookId + '_chapter');
+        const savedTime = localStorage.getItem(currentAudiobookId + '_time');
+
+        if (savedChapterIndex !== null && savedTime !== null) {
+          currentChapterIndex = parseInt(savedChapterIndex);
+          loadChapter();
+
+          // Wait for Howler.js to fully load the audio file before seeking
+          sound.once('load', () => {
+            sound.seek(parseFloat(savedTime));
+          });
+        } else {
+          loadChapter(); // Default to the first chapter if no saved position exists
+        }
+      }
+
+      // Modify the initPlayer to load saved positions
+      function initPlayer(audiobookId) {
+        currentAudiobookId = audiobookId;
+        currentChapterIndex = 0;
+
+        if (audiobooks[audiobookId]) {
+          const audiobook = audiobooks[audiobookId];
+
+          document.getElementById('bookTitle').textContent = audiobook.title;
+          document.getElementById('poster').src = audiobook.poster;
+          loadChapterList();
+          loadPlaybackPosition(); // Load the saved position or default to first chapter
+        } else {
+          console.error('Audiobook not found:', audiobookId);
+        }
+      }
+
+      // Save the position when the window is closed or refreshed
+      window.addEventListener('beforeunload', savePlaybackPosition);
+    
       let audiobooks = {};
       let currentAudiobookId = "";
       let currentChapterIndex = 0;
