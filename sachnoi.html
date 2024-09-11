@@ -29,8 +29,10 @@
         }
         #chapter-list {
             margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
+        }
+        .active-chapter {
+            background-color: #d1ecf1;
+            font-weight: bold;
         }
         @media (max-width: 768px) {
             .btn {
@@ -108,9 +110,18 @@
             audio.load();
             audio.play();
             playingChapterDisplay.innerText = 'Playing: ' + chapters[currentChapter].title;
+            highlightCurrentChapter();
             updateButtons();
             document.cookie = "lastPlayedIndex=" + currentChapter + "; path=/";
             document.cookie = "lastPlayedPosition=" + position + "; path=/";
+        }
+
+        function highlightCurrentChapter() {
+            const items = chapterList.getElementsByClassName('list-group-item');
+            for (let i = 0; i < items.length; i++) {
+                items[i].classList.remove('active-chapter');
+            }
+            items[currentChapter].classList.add('active-chapter');
         }
 
         audio.addEventListener('timeupdate', () => {
