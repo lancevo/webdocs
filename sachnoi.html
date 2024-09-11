@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-20WS91646H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-20WS91646H');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audio Book Player</title>
@@ -103,18 +111,29 @@
                 }
             });
 
-        function playChapter(index, position = 0) {
-            currentChapter = index;
-            source.src = chapters[currentChapter].src;
-            audio.currentTime = position;
-            audio.load();
-            audio.play();
-            playingChapterDisplay.innerText = 'Playing: ' + chapters[currentChapter].title;
-            highlightCurrentChapter();
-            updateButtons();
-            document.cookie = "lastPlayedIndex=" + currentChapter + "; path=/";
-            document.cookie = "lastPlayedPosition=" + position + "; path=/";
-        }
+            function playChapter(index, position = 0) {
+                currentChapter = index;
+                source.src = chapters[currentChapter].src;
+                audio.currentTime = position;
+                audio.load();
+                audio.play();
+                playingChapterDisplay.innerText = 'Playing: ' + chapters[currentChapter].title;
+                highlightCurrentChapter();
+                updateButtons();
+                document.cookie = "lastPlayedIndex=" + currentChapter + "; path=/";
+                document.cookie = "lastPlayedPosition=" + position + "; path=/";
+
+                // Send play event to GTM
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    'event': 'play_chapter',
+                    'book_title': document.getElementById('book-title').innerText,
+                    'chapter_title': chapters[currentChapter].title,
+                    'user_id': getUserId(), // Implement a function to get user ID if applicable
+                    'device': navigator.userAgent,
+                    'location': getLocation() // Implement a function to get location if needed
+                });
+            }
 
         function highlightCurrentChapter() {
             const items = chapterList.getElementsByClassName('list-group-item');
