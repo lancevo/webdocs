@@ -77,8 +77,8 @@
         let currentChapter = 0;
         let currentPosition = 0;
 
-        // Load audiobooks from the JSON URL
-        fetch('https://lancevo.github.io/webdocs/audiobooks.json')
+        // Load audiobooks from the JSON URL with cache-busting
+        fetch(`./audiobooks.json?cacheBust=${new Date().getTime()}`)
             .then(response => response.json())
             .then(data => {
                 const audiobook = Object.values(data)[0]; // Load the first book
