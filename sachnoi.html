@@ -129,11 +129,18 @@
                     'event': 'play_chapter',
                     'book_title': document.getElementById('book-title').innerText,
                     'chapter_title': chapters[currentChapter].title,
-                    'user_id': getUserId(), // Implement a function to get user ID if applicable
-                    'device': navigator.userAgent,
-                    'location': getLocation() // Implement a function to get location if needed
+                    'engagement_time_msec': Math.floor(audio.currentTime * 1000)
                 });
             }
+
+            audio.addEventListener('pause', () => {
+                window.dataLayer.push({
+                    'event': 'pause_chapter',
+                    'book_title': document.getElementById('book-title').innerText,
+                    'chapter_title': chapters[currentChapter].title,
+                    'engagement_time_msec': Math.floor(audio.currentTime * 1000)
+                });
+            });
 
         function highlightCurrentChapter() {
             const items = chapterList.getElementsByClassName('list-group-item');
