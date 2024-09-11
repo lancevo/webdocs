@@ -1,52 +1,7 @@
 {
-  "ThoatKhoiVongBanRon": {
-    "title": "Thoát khỏi vòng bận rộn",
-    "poster": "https://summerbayinc-my.sharepoint.com/personal/lance_jollysparks_com/Documents/Audio%20Books/Thoat%20Khoi%20Vong%20Ban%20Ron/poster.jpg",
-    "chapters": [
-      {
-        "id": 1,
-        "src": "https://archive.org/download/ttt-tkvbr/ThoatKhVbron01.mp3",
-        "title": "track 1"
-      },
-      {
-        "id": 2,
-        "src": "https://archive.org/download/ttt-tkvbr/ThoatKhVbron02.mp3",
-        "title": "track 2"
-      },
-      {
-        "id": 3,
-        "src": "https://archive.org/download/ttt-tkvbr/ThoatKhVbron03.mp3",
-        "title": "track 3"
-      },
-      {
-        "id": 4,
-        "src": "https://archive.org/download/ttt-tkvbr/ThoatKhVbron04.mp3",
-        "title": "track 4"
-      },
-      {
-        "id": 5,
-        "src": "https://archive.org/download/ttt-tkvbr/ThoatKhVbron05.mp3",
-        "title": "track 5"
-      },
-      {
-        "id": 6,
-        "src": "https://archive.org/download/ttt-tkvbr/ThoatKhVbron06.mp3",
-        "title": "track 6"
-      },
-      {
-        "id": 7,
-        "src": "https://archive.org/download/ttt-tkvbr/ThoatKhVbron07.mp3",
-        "title": "track 7"
-      },
-      {
-        "id": 8,
-        "src": "https://archive.org/download/ttt-tkvbr/ThoatKhVbron08.mp3",
-        "title": "track 8"
-      }
-    ]
-  },
+
   "song-hanh-phuc-cns": {
-    "title": "Song Hanh Phuc",
+    "title": "Sống Hạnh Phúc",
     "poster": "https://summerbayinc-my.sharepoint.com/personal/lance_jollysparks_com/Documents/Audio%20Books/Song%20Hanh%20Phuc%20-%20Cam%20Nang%20Cho%20Cuoc%20Song/poster.jpg",
     "chapters": [
       {
